@@ -1,28 +1,306 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TicketLess</title>
+<title>TicketLess — Never miss a parking charge again</title>
+<meta name="description" content="TicketLess detects when you've parked at a UK station, airport, or any car park you add, and reminds you to pay before a Parking Charge Notice lands. No account. No ads. Everything stays on your phone." />
+<link rel="icon" href="icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #F4F8FC; color: #04193B; margin: 0; padding: 40px 20px; }
-  main { max-width: 640px; margin: 0 auto; }
-  h1 { font-size: 26px; margin-bottom: 8px; }
-  p { line-height: 1.5; color: #2C4870; }
-  a { color: #0042AA; font-weight: 600; text-decoration: none; }
-  ul { padding-left: 20px; }
-  li { margin-bottom: 8px; color: #2C4870; line-height: 1.5; }
+  :root{
+    --blue:#0042AA; --blue-dark:#003085; --blue-light:#E6F1FB;
+    --green:#00A337; --green-light:#E3F7E8;
+    --ink:#04193B; --ink-med:#2C4870; --ink-muted:#5B7699; --ink-faint:#93A9C4;
+    --bg:#F4F8FC; --border:#DCE7F5; --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.display{font-family:'Manrope',sans-serif;}
+  a{color:var(--blue);}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  .narrow{max-width:720px;margin:0 auto;padding:0 24px;}
+
+  header{padding:22px 0;}
+  .nav{display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);}
+  .brand img{width:36px;height:36px;border-radius:9px;}
+  .brand span{font-family:'Manrope',sans-serif;font-weight:800;font-size:19px;}
+  .brand span b{color:var(--blue);} .brand span i{color:var(--green);font-style:normal;}
+  nav.links{display:flex;gap:28px;font-size:14px;font-weight:600;}
+  nav.links a{color:var(--ink-med);text-decoration:none;}
+  nav.links a:hover{color:var(--blue);}
+
+  .hero{padding:64px 0 72px;}
+  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--blue-light);color:var(--blue);font-size:13px;font-weight:700;padding:6px 14px;border-radius:100px;margin-bottom:20px;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+  h1.display{font-size:44px;line-height:1.12;font-weight:800;margin:0 0 20px;letter-spacing:-0.02em;text-wrap:balance;}
+  h1.display .hl{color:var(--blue);}
+  .lede{font-size:18px;line-height:1.6;color:var(--ink-med);margin:0 0 32px;max-width:480px;}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;}
+  .btn-primary{background:var(--blue);color:#fff;}
+  .btn-primary:hover{background:var(--blue-dark);}
+  .btn-ghost{color:var(--ink-med);border:1.5px solid var(--border);background:#fff;}
+  .cta-note{font-size:13px;color:var(--ink-faint);margin-top:14px;}
+
+  .phone-mock{background:linear-gradient(160deg,#1257D6,var(--blue-dark));border-radius:36px;padding:22px;box-shadow:0 30px 60px -20px rgba(0,66,170,0.35);max-width:320px;margin:0 auto;}
+  .phone-screen{background:#fff;border-radius:22px;overflow:hidden;}
+  .phone-bar{background:var(--blue);color:#fff;font-size:13px;font-weight:700;padding:14px 16px;text-align:center;}
+  .phone-body{padding:18px;}
+  .phone-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;}
+  .phone-card .k{font-size:11px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+  .phone-card .v{font-size:14px;font-weight:700;color:var(--ink);}
+  .phone-alert{background:var(--blue);border-radius:14px;padding:16px;color:#fff;}
+  .phone-alert .t{font-size:13px;font-weight:800;margin-bottom:6px;}
+  .phone-alert .b{font-size:12px;opacity:.9;line-height:1.5;margin-bottom:12px;}
+  .phone-alert .btn2{background:#fff;color:var(--blue);border-radius:8px;padding:8px;text-align:center;font-size:13px;font-weight:800;}
+
+  section{padding:64px 0;}
+  .section-head{text-align:center;max-width:600px;margin:0 auto 48px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  h2.display{font-size:30px;font-weight:800;margin:0 0 12px;letter-spacing:-0.01em;text-wrap:balance;}
+  .section-head p{color:var(--ink-muted);font-size:16px;line-height:1.6;margin:0;}
+
+  .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .feature{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px;}
+  .feature .icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;}
+  .icon-blue{background:var(--blue-light);}
+  .icon-green{background:var(--green-light);}
+  .feature h3{font-size:16px;font-weight:700;margin:0 0 8px;}
+  .feature p{font-size:14px;color:var(--ink-muted);line-height:1.6;margin:0;}
+
+  .strip{background:var(--ink);color:#fff;padding:56px 0;}
+  .strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center;}
+  .stat b{display:block;font-family:'Manrope',sans-serif;font-size:30px;font-weight:800;color:#fff;}
+  .stat span{font-size:13px;color:#9DB2CE;}
+
+  .pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:680px;margin:0 auto;}
+  .price-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:28px;}
+  .price-card.hi{border-color:var(--blue);border-width:2px;position:relative;}
+  .price-card .badge{position:absolute;top:-13px;left:24px;background:var(--blue);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:100px;letter-spacing:.02em;}
+  .price-card h3{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--ink-muted);}
+  .price-card .amt{font-family:'Manrope',sans-serif;font-size:34px;font-weight:800;margin:6px 0 18px;}
+  .price-card .amt span{font-size:15px;font-weight:600;color:var(--ink-muted);}
+  .price-card ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
+  .price-card li{font-size:14px;color:var(--ink-med);display:flex;gap:8px;align-items:flex-start;}
+  .price-card li:before{content:"✓";color:var(--green);font-weight:800;}
+
+  .faq{max-width:720px;margin:0 auto;}
+  .faq-item{border-bottom:1px solid var(--border);padding:20px 0;}
+  .faq-item h3{font-size:15px;font-weight:700;margin:0 0 8px;}
+  .faq-item p{font-size:14px;color:var(--ink-muted);line-height:1.6;margin:0;}
+
+  .cta-band{background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-radius:28px;padding:56px 40px;text-align:center;color:#fff;margin:0 24px;}
+  .cta-band h2{color:#fff;}
+  .cta-band p{color:#C9DBF5;font-size:16px;margin:0 0 28px;}
+  .cta-band .btn-primary{background:#fff;color:var(--blue);}
+  .cta-band .btn-primary:hover{background:#EAF1FB;}
+
+  footer{padding:48px 0 60px;}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px;border-top:1px solid var(--border);padding-top:32px;}
+  .foot-links{display:flex;gap:24px;font-size:14px;}
+  .foot-links a{color:var(--ink-muted);text-decoration:none;}
+  .foot-links a:hover{color:var(--blue);}
+  .foot-copy{font-size:13px;color:var(--ink-faint);}
+
+  @media(max-width:860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero .phone-mock{order:-1;max-width:240px;}
+    h1.display{font-size:32px;}
+    nav.links{display:none;}
+    .feature-grid{grid-template-columns:1fr;}
+    .strip .wrap{grid-template-columns:1fr 1fr;row-gap:28px;}
+    .pricing-grid{grid-template-columns:1fr;}
+    .cta-band{margin:0 16px;padding:40px 24px;}
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>TicketLess</h1>
-  <p>Parking reminders and PCN appeal help for UK station and retail car parks.</p>
-  <ul>
-    <li><a href="privacy.html">Privacy Policy</a></li>
-    <li><a href="terms.html">Terms &amp; Conditions</a></li>
-    <li><a href="support.html">Support</a></li>
-  </ul>
-</main>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <img src="icon.png" alt="TicketLess" />
+      <span><b>ticket</b><i>less</i></span>
+    </a>
+    <nav class="links">
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="support.html">Support</a>
+    </nav>
+    <a class="btn btn-ghost" href="#get" style="padding:10px 20px;font-size:14px;">Get the app</a>
+  </div>
+</header>
+
+<div id="top" class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="dot"></span> UK station &amp; airport parking, covered automatically</div>
+      <h1 class="display">Never miss a <span class="hl">parking charge</span> again</h1>
+      <p class="lede">TicketLess quietly watches for you to arrive at a car park — a UK train station, a major airport drop-off, or anywhere you add — and reminds you to pay before a Parking Charge Notice ever lands. No account. No ads. Nothing leaves your phone.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" id="get" href="mailto:chris@merakiproperty.com?subject=TicketLess%20beta%20access">Join the beta →</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <p class="cta-note">Currently in private beta on iOS. App Store launch coming soon.</p>
+    </div>
+    <div class="phone-mock">
+      <div class="phone-screen">
+        <div class="phone-bar">TicketLess</div>
+        <div class="phone-body">
+          <div class="phone-card">
+            <div class="k">Watching</div>
+            <div class="v">18 places right now</div>
+          </div>
+          <div class="phone-alert">
+            <div class="t">Parked at Potters Bar</div>
+            <div class="b">Have you paid for this parking session yet?</div>
+            <div class="btn2">Pay now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span> How it works</div>
+      <h2 class="display">Built for the car parks that catch people out</h2>
+      <p>Barrierless, pay-online-later car parks are where charges slip through — this is the exact gap TicketLess closes.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="icon icon-blue">📍</div>
+        <h3>Detects your arrival automatically</h3>
+        <p>UK train stations and major airport drop-off zones are already built in. Add anywhere else — a supermarket, gym, pub, hotel — in seconds.</p>
+      </div>
+      <div class="feature">
+        <div class="icon icon-blue">🔔</div>
+        <h3>Reminds you before it's too late</h3>
+        <p>A reminder lands on your lock screen — not buried in-app — with one tap through to pay, mark it paid, or say you're not parking after all.</p>
+      </div>
+      <div class="feature">
+        <div class="icon icon-green">📄</div>
+        <h3>Helps if one slips through anyway</h3>
+        <p>Your parking history is kept for weeks. If a Parking Charge Notice arrives late, TicketLess helps draft a POPLA/IAS-format appeal letter in minutes.</p>
+      </div>
+      <div class="feature">
+        <div class="icon icon-green">🔒</div>
+        <h3>No account, ever</h3>
+        <p>There's nothing to sign up for. Your car parks, vehicles, and history live only on your device — not on a server, not for sale.</p>
+      </div>
+      <div class="feature">
+        <div class="icon icon-blue">✈️</div>
+        <h3>Covers airport drop-offs too</h3>
+        <p>Heathrow, Gatwick, Manchester and more charge for dropping someone off, paid online the next day — easy to forget, easy to get fined for.</p>
+      </div>
+      <div class="feature">
+        <div class="icon icon-green">✍️</div>
+        <h3>Register-to-park sites, remembered</h3>
+        <p>Some car parks are free but only if you register your reg. Tell TicketLess once, and it reminds you the same way every visit after — so a free stay doesn't quietly turn into a charge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="stat"><b>UK-wide</b><span>Stations &amp; airports built in</span></div>
+    <div class="stat"><b>0</b><span>Accounts required</span></div>
+    <div class="stat"><b>0</b><span>Ads, ever</span></div>
+    <div class="stat"><b>7min</b><span>Before a reminder fires</span></div>
+  </div>
+</div>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span> Pricing</div>
+      <h2 class="display">Free covers most people. Premium removes the limits.</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Free</h3>
+        <div class="amt">£0</div>
+        <ul>
+          <li>1 vehicle</li>
+          <li>2 saved car parks</li>
+          <li>Unlimited auto-detection &amp; reminders</li>
+          <li>Pay-per-letter appeal drafting</li>
+        </ul>
+      </div>
+      <div class="price-card hi">
+        <div class="badge">Founding member offer</div>
+        <h3>Premium</h3>
+        <div class="amt">£6.99 <span>first year</span></div>
+        <ul>
+          <li>Unlimited vehicles</li>
+          <li>Unlimited car parks</li>
+          <li>Unlimited appeal letters</li>
+          <li>Renews at £12.99/year after</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="narrow">
+    <div class="section-head">
+      <h2 class="display">Questions</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item">
+        <h3>Do I need to create an account?</h3>
+        <p>No. TicketLess has no login of any kind. Your data lives only on your device.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Does TicketLess pay on my behalf?</h3>
+        <p>No — it never logs into or pays a parking operator for you. It opens the operator's own app or site so you pay in your own account, then tracks that you've done it.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Which car parks are covered automatically?</h3>
+        <p>UK train stations and major UK airport drop-off zones are built in. Anywhere else, add it once and TicketLess watches for you from then on.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is it available on Android?</h3>
+        <p>Not yet — TicketLess is iOS-only at launch. Read the full <a href="privacy.html">Privacy Policy</a> and <a href="terms.html">Terms &amp; Conditions</a> for the complete details on how the app works.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="cta-band">
+    <h2 class="display">Stop wondering if you paid</h2>
+    <p>Join the private beta and never think about a barrierless car park again.</p>
+    <a class="btn btn-primary" href="mailto:chris@merakiproperty.com?subject=TicketLess%20beta%20access">Join the beta →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a class="brand" href="#top">
+      <img src="icon.png" alt="TicketLess" style="width:28px;height:28px;" />
+      <span style="font-size:16px;"><b>ticket</b><i>less</i></span>
+    </a>
+    <div class="foot-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="support.html">Support</a>
+      <a href="mailto:chris@merakiproperty.com">Contact</a>
+    </div>
+    <div class="foot-copy">© 2026 TicketLess. UK parking reminders &amp; appeal help.</div>
+  </div>
+</footer>
+
 </body>
 </html>
